@@ -1,0 +1,62 @@
+1) deployado airdrop en mumbai
+
+npx hardhat --network mumbai run contracts\desafios\desafio9\scripts\deployAirdrop.js
+
+Address deployed: 0x3e5929B5A832a0Cf6b4Cb7C3DcC10013e44a8c42
+Successfully submitted source code for contract
+contracts/desafios/desafio9/contracts/AirdropOneCrossChain.sol:AirdropOneCrossChain at 0x3e5929B5A832a0Cf6b4Cb7C3DcC10013e44a8c42
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract AirdropOneCrossChain on the block explorer.
+https://mumbai.polygonscan.com/address/0x3e5929B5A832a0Cf6b4Cb7C3DcC10013e44a8c42#code
+
+2) deployado airdrop en sepolia
+
+npx hardhat --network sepolia run contracts\desafios\desafio9\scripts\deployMiPrimerToken.js
+
+Address deployed: 0x41aDFb4793Eb1234eb902485A6d2579D4C31eFa2
+Successfully submitted source code for contract
+contracts/desafios/desafio9/contracts/MiPrimerToken.sol:MiPrimerTokenCrossChain at 0x41aDFb4793Eb1234eb902485A6d2579D4C31eFa2
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract MiPrimerTokenCrossChain on the block explorer.
+https://sepolia.etherscan.io/address/0x41aDFb4793Eb1234eb902485A6d2579D4C31eFa2#code
+
+3) addresses de los contratos:
+
+Address del contrato AirdropOneCrossChain (en mumbai): 0x3e5929B5A832a0Cf6b4Cb7C3DcC10013e44a8c42
+Address del contrato MiPrimerTokenCrossChain (en sepolia): 0x41aDFb4793Eb1234eb902485A6d2579D4C31eFa2
+
+4) 
+Pega aquí la transacción hash de Mumbai luego de participar en Airdrop: 0xacc91064fd9797151370acfbb51c8552172ace8671032a93fe4546d5d7de6670
+Pega aquí la transacción hash de Sepolia que acuña los tokens ERC20: 
+
+
+===================
+Notas:
+===================
+1) si se cuenta con mas de un contrato con el mismo nombre:
+google: solidity hardhat deploy having 2 contracts with the same name
+https://ethereum.stackexchange.com/questions/135052/call-contract-artifacts-with-same-names-from-different-path-in-hardhat
+
+  //const miPrimerToken = await ethers.deployContract("MiPrimerTokenCrossChain", [
+  const miPrimerToken = await ethers.deployContract("contracts/desafios/desafio9/contracts/MiPrimerToken.sol:MiPrimerTokenCrossChain", [
+    name,
+    symbol,
+  ]);
+  console.log(`Address deployed: ${await miPrimerToken.getAddress()}`);
+
+Ahora bien, llegado a la linea del console.log he visto que aun no estaria deployado en mumbai el contrato.
+https://mumbai.polygonscan.com/address/0x3e5929B5A832a0Cf6b4Cb7C3DcC10013e44a8c42
+
+2) si se tiene con mas de un contrato identico (mismo bytecode o ABI?), en el "verify:verify":
+
+  await hre.run("verify:verify", {
+    address: await miPrimerToken.getAddress(),
+    constructorArguments: [name, symbol],
+    contract: "contracts/desafios/desafio9/contracts/MiPrimerToken.sol:MiPrimerTokenCrossChain",
+  });
+
+Si no se termina aun de ejecutar el verify, en el sepolia scanner no se verá aun el contrato verificado (no sale el check verde)
+https://sepolia.etherscan.io/address/0x41aDFb4793Eb1234eb902485A6d2579D4C31eFa2#code
+

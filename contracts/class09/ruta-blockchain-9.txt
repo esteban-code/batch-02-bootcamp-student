@@ -1,0 +1,205 @@
+copiar en el archivo hardhat.config.js
+
+	require("@nomicfoundation/hardhat-toolbox");
+	require("dotenv").config();
+	
+	/** @type import('hardhat/config').HardhatUserConfig */
+	module.exports = {
+	  solidity: "0.8.19",
+	  networks: {
+	    localhost: {
+	      url: "http://127.0.0.1:8545",
+	    },
+	    mumbai: {
+	      url: process.env.MUMBAI_TESNET_URL,
+	      accounts: [process.env.PRIVATE_KEY || ""],
+	      timeout: 0,
+	      gas: "auto",
+	      gasPrice: "auto",
+	    },
+	    goerli: {
+	      url: process.env.GOERLI_TESNET_URL,
+	      accounts: [process.env.PRIVATE_KEY || ""],
+	      timeout: 20000,
+	      gas: "auto",
+	      gasPrice: "auto",
+	    },
+	  },
+	  etherscan: {
+	    apiKey: {
+	      polygonMumbai: process.env.API_KEY_POLYGONSCAN,
+	      sepolia: process.env.API_KEY_ETHERSCAN,
+	      goerli: process.env.API_KEY_ETHERSCAN,
+	    },
+	  },
+	};
+
+
+.env
+API_KEY_POLYGONSCAN=
+API_KEY_ETHERSCAN=
+PRIVATE_KEY=
+MUMBAI_TESNET_URL=
+GOERLI_TESNET_URL=
+SEPOLIA_TESNET_URL=
+
+
+BBTKN
+
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
+
+interface IERC20 {
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    function totalSupply() external view returns (uint256);
+    function balanceOf(address account) external view returns (uint256);
+    function transfer(address to, uint256 amount) external returns (bool);
+    function allowance(address owner, address spender) external view returns (uint256);
+    function approve(address spender, uint256 amount) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+}
+
+
+contract TokenGenerico is IERC20 {
+    // IERC20().transfer <= XXXXXXX
+    string nombreDelToken;
+    string simboloToken;
+
+    constructor(
+        string memory _nombreDelToken,
+        string memory _simboloToken
+    ) {
+        nombreDelToken = _nombreDelToken;
+        simboloToken = _simboloToken;
+    }
+
+    function name() public view returns(string memory) {
+        return nombreDelToken;
+    }
+
+    function symbol() public view returns(string memory) {
+        return simboloToken;
+    }
+    
+    function decimals() public pure virtual returns(uint256) {
+        return 18;
+    }
+
+    uint256 public totalSupply;
+    
+    mapping(address billetera => uint256 balance) balances;
+    function balanceOf(address account) public view returns(uint256) {
+        return balances[account];
+    }
+
+    function mint(address to, uint256 amount) public {
+        balances[to] += amount;
+        totalSupply += amount;
+
+        emit Transfer(address(0), to, amount);
+    }
+
+    function burn(uint256 amount) public {
+        balances[msg.sender] -= amount;
+        totalSupply -= amount;
+
+        emit Transfer(msg.sender, address(0), amount);
+    }
+
+    function _burnTokensDeSC(uint256 amount) private {
+        balances[address(this)] -= amount;
+        totalSupply -= amount;
+    }
+
+    function transfer(address to, uint256 amount) public override returns(bool) {
+        _transfer(msg.sender, to, amount);
+        return true;
+    }
+
+    // function transferFrom(address from, address to, uint256 amount) external returns (bool);
+    // .transferFrom()
+    function transferFrom(address from, address to, uint256 amount) public override returns(bool) {
+        uint256 spenderPermiso = permisos[from][msg.sender];
+        require(spenderPermiso >= amount, "No tienes suficiente permiso");
+        permisos[from][msg.sender] -= amount;
+
+        _transfer(from, to, amount);
+
+        return true;
+    }
+
+    function _transfer(address from, address to, uint256 amount) internal {
+        require(from != address(0), "Enviando desde Address Zero");
+        require(to != address(0), "Enviando a Address Zero");
+
+        uint256 balanceFrom = balances[from];
+        require(balanceFrom >= amount, "No tiene suficiente balance");
+
+        balances[from] -= amount;
+        balances[to] += amount;
+
+        emit Transfer(from, to, amount);
+    }
+
+    mapping(address owner => mapping(address spender => uint256 qPermiso)) permisos;
+    function approve(address spender, uint256 amount) public override returns(bool) {
+        permisos[msg.sender][spender] = amount;
+
+        emit Approval(msg.sender, spender, amount);
+
+        return true;
+    }
+
+    function allowance(address owner, address spender) public view returns(uint256) {
+        return permisos[owner][spender];
+    }
+}
+
+contract BBTKN is TokenGenerico {
+    constructor() TokenGenerico("Blockchain B. Token", "BBTKN") {}
+
+    function decimals() public pure override returns(uint256) {
+        return 6;
+    }
+}
+
+contract SHIBAINU is TokenGenerico {
+    constructor() TokenGenerico("SHIBA INU", "SHINU") {}
+}
+
+/**
+     INTERFACES
+     1. PUERTA
+        - puedo hacer llamadas intercontratos
+        - para usarlo intancio la interface
+        - InterfazX().nombreDeMetodo();
+
+     2. CAMISA DE FUERZA
+        - para aplicar reglas a un contrato (estandarizar)
+        - se hereda
+        - se hace una validacion a nivel de firma de los metodos
+        - no se ejecutan los metodos directamente
+*/
+
+
+levantar un nodo: npx hardhat node
+ejecutar deploy.js en local: npx hardhat run script/deploy.js
+ejecutar deploy.js en mumbai: npx hardhat --network mumbai run script/deploy.js
+ejecutar deploy.js en localhost: npx hardhat --network localhost run script/deploy.js
+conectarte con mumbai: npx hardhat --network mumbai console
+
+
+
+const [owner] = await ethers.getSigners();
+var contractAddress = "0x61Bda21D9C8FC9e79489C7C4951f8edeA5420712";
+var abi = ["function mint(address to, uint256 amount) public"];
+var provider = ethers.provider;
+
+var contract = new ethers.Contract(contractAddress, abi, ethers.provider);
+var tx = await contract
+  .connect(owner)
+  .mint("0x61Bda21D9C8FC9e79489C7C4951f8edeA5420712", 1000);
+var res = await tx.wait(5);
+

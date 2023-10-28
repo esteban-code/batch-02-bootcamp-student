@@ -1,0 +1,12 @@
+{
+  "name": "MOCHE#27",
+  "description": "Lista de NFTs como parte del Bootcamp Virtual Batch 2 - 2023 LATAM",
+  "image": "ipfs://QmWU4yb225aTpyWkBQKAffjLaPhFKyWYiiPKbUvJPx6eou/27.png",
+  "attributes": [
+    { "trait_type": "MANTO", "value": "MANTO TIERRA" },
+    { "trait_type": "BANCO", "value": "TRONCO" },
+    { "trait_type": "CUY", "value": "CUY MANDINGO" },
+    { "trait_type": "CHULLO", "value": "CHULLO CUSCO" },
+    { "trait_type": "CARA", "value": "LENTES" }
+  ]
+}
