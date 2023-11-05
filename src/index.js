@@ -126,7 +126,7 @@ function setUpListeners() {
     var list = document.getElementById("liveAuctionsList");
     list.innerHTML = "";
 
-    var res = await subastaContract.verSubastasActivas();
+    var res = await subastaContract.verSubastasActivas();//donde la funcion retorna bytes32[]
     console.log(res);
     res.forEach((subastaActiva, ix) => {
       var child = document.createElement("li");
@@ -138,7 +138,9 @@ function setUpListeners() {
   // public auctions:
   var consultAuctionBttn = document.getElementById("consultAuctionBttn");
   consultAuctionBttn.addEventListener("click", async function () {
-    var consultAuctionInput = document.getElementById("consultAuctionInput");
+  // el mapping auctions: mapping(bytes32 => Auction) public auctions;
+  // Auction es un struct, y en js lo toma como un array
+    var consultAuctionInput = document.getElementById("consultAuctionInput");//capturo este bytes32 de la anterior llamada a verSubastasActivas()
     var auctionInfoArr = await subastaContract.auctions(
       consultAuctionInput.value
     );
@@ -164,7 +166,7 @@ function setUpSmartContracts() {
 
   // Usando Ethers
   // Contract = address + abi + provider
-  subastaContract = new Contract(subastaAddress, subastaAbi, provider);//probar new ethers.Contract // import { /*Contract,*/ ethers } from "ethers";
+  subastaContract = new Contract(subastaAddress, subastaAbi, provider);//o new ethers.Contract(...) // import { ethers } from "ethers";
 }
 
 function setUpEvents() {

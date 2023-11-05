@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain</title>
+</head>
+
+<body>
+    <div>
+        <h1>Deployar el contrato</h1>
+        <button id="deployBtn">Deployar</button>
+        <label for="txtContractAddress">Contract Address</label>
+        <input type="text" id="txtContractAddress" name="txtContractAddress" readonly style="width: 320px;">
+</div>
+
+    <div>
+        <h1>Llamadas al contrato</h1>
+        <button id="callBtn">Call Contract</button>
+        <label for="txtContractAddress2">Contract Address</label>
+        <input type="text" id="txtContractAddress2" name="txtContractAddress2" readonly style="width: 320px;">
+    </div>
+    <div>
+        <h1>Balances</h1>
+        <label for="txtEtherBalance">Ether Balance</label>
+        <textarea id="txtEtherBalance" style="width: 300px; height: 150px;"></textarea>
+        <label for="txtPeruTokenBalance">PeruToken Balance</label>
+        <textarea id="txtPeruTokenBalance" style="width: 300px; height: 150px;"></textarea>
+    </div>
+    <!--script type="module" src="../scripts/script_browser.js"></script-->
+    <script type="module" src="../scripts/script_metamask.js"></script>
+</body>
+
+</html>

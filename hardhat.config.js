@@ -5,13 +5,19 @@ require("dotenv").config();
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: "0.8.19",
+  // paths: {
+  //   sources: "./contracts",
+  //   tests: "./test",
+  //   cache: "./cache",
+  //   artifacts: "./artifacts"
+  // },
   networks: {
     localhost: {
       url: "http://127.0.0.1:8545",
     },
     mumbai: {
       url: process.env.MUMBAI_TESNET_URL,
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [process.env.PRIVATE_KEY, process.env.OTHER_ACCOUNT_PRIVATE_KEY],
       timeout: 0,
       gas: "auto",
       gasPrice: "auto",
@@ -25,7 +31,8 @@ module.exports = {
     },
     goerli: {
       url: process.env.GOERLI_TESNET_URL,
-      accounts: [process.env.PRIVATE_KEY || ""],
+      //accounts: [process.env.PRIVATE_KEY || ""],
+      accounts: [process.env.PRIVATE_KEY, process.env.OTHER_ACCOUNT_PRIVATE_KEY],
       timeout: 0,
       gas: "auto",
       gasPrice: "auto",
